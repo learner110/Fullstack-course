@@ -15,15 +15,12 @@ const App = () => {
   const [messageType, setMessageType] = useState('success')
 
   useEffect(() => {
-
     personService.getAll().then(data => {
-      setPersons(data)
+      setPersons(Array.isArray(data) ? data : [])
     })
-
   }, [])
 
   const showMessage = (text, type) => {
-
     setMessage(text)
     setMessageType(type)
     setTimeout(() => {
@@ -31,20 +28,15 @@ const App = () => {
     }, 5000)
   }
 
-
-
   const addPerson = (event) => {
     event.preventDefault()
 
     const existing = persons.find(p => p.name === newName)
 
-
     if (existing) {
-      
       if (window.confirm(`${newName} is already added, replace number?`)) {
         const changedPerson = { ...existing, number: newNumber }
 
-        
         personService
           .update(existing.id, changedPerson)
           .then(returned => {
@@ -53,7 +45,6 @@ const App = () => {
             setNewNumber('')
             showMessage(`Updated ${returned.name}`, 'success')
           })
-
           .catch(() => {
             showMessage(
               `Information of ${existing.name} has already been removed from server`,
@@ -62,16 +53,12 @@ const App = () => {
             setPersons(persons.filter(p => p.id !== existing.id))
           })
       }
-
-
       return
     }
 
-
-    const newPerson = { name: newName,number: newNumber}
+    const newPerson = { name: newName, number: newNumber }
 
     personService
-
       .create(newPerson)
       .then(returned => {
         setPersons(persons.concat(returned))
@@ -79,11 +66,13 @@ const App = () => {
         setNewNumber('')
         showMessage(`Added ${returned.name}`, 'success')
       })
+      .catch(error => {
+        showMessage(error.response.data.error, 'error')
+      })
   }
 
   const handleDelete = (id) => {
     const person = persons.find(p => p.id === id)
-
 
     if (window.confirm(`Delete ${person.name}?`)) {
       personService
@@ -100,13 +89,13 @@ const App = () => {
           setPersons(persons.filter(p => p.id !== id))
         })
     }
-
-
   }
 
-  const personsToShow = persons.filter(p =>
-    p.name.toLowerCase().includes(filter.toLowerCase())
-  )
+  const personsToShow = Array.isArray(persons)
+    ? persons.filter(p =>
+        p.name.toLowerCase().includes(filter.toLowerCase())
+      )
+    : []
 
   return (
     <div>
