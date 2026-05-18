@@ -1,3 +1,5 @@
+console.log('NODE_ENV IN APP.JS:', process.env.NODE_ENV)
+console.log('REGISTERING TEST ROUTES, NODE_ENV =', process.env.NODE_ENV)
 require('express-async-errors')
 
 const express = require('express')
@@ -25,6 +27,12 @@ app.use('/api/users', usersRouter)
 
 app.use('/api/blogs', blogsRouter)
 
+if (process.env.NODE_ENV === 'test') {
+  const testingRouter = require('./controllers/testing')
+  app.use('/api/testing', testingRouter)
+}
+
 app.use(middleware.errorHandler)
 
 module.exports = app
+
