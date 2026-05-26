@@ -2,29 +2,20 @@ name: Test library-backend
 
 on:
   push:
-   branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v6
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 24
-
-      - name: Install library-backend dependencies
-        working-directory: library-backend
+          node-version: '18'
+      - name: Install backend dependencies
         run: npm ci
-
-      - name: Install test dependencies
-        working-directory: tests-chapter4
-        run: npm ci
-
-      - name: Run tests
-        working-directory: tests-chapter4
+        working-directory: osa8/fs-graphql/library-backend
+      - name: Run backend tests
         run: npm test
+        working-directory: osa8/fs-graphql/library-backend
